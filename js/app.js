@@ -12,18 +12,23 @@ function createEmployee(i) {
   let li = document.createElement('li');
   li.className = 'container container2 item';
   ul.appendChild(li);
+
   let picDiv = document.createElement('div');
   li.appendChild(picDiv);
 
   let anchor = document.createElement('a');
-  anchor.setAttribute('data-lightbox', `image${i}`);
+  anchor.setAttribute('data-lightbox', `infobox`);
+  // anchor.setAttribute('href', `#${i}`);
   picDiv.appendChild(anchor);
 
   let img = document.createElement('img');
   anchor.appendChild(img);
+
   let infoDiv = document.createElement('div');
   infoDiv.className = 'info';
+  infoDiv.id = `modal${i}`;
   li.appendChild(infoDiv);
+
   const classes = ['name', 'email', 'city', 'phone', 'address', 'birthday'];
   classes.forEach((clase) => {
     let employeeInfo = document.createElement('p');
@@ -70,6 +75,10 @@ function displayData(data) {
     modifyEmployeeInfo(birthdayList, i, `Birthday: ${orderDOB(employee.dob)}`);
     picList[i].src = employee.picture.large;
     picList[i].alt = 'profile';
+
+    let anchors = document.getElementsByTagName('a');
+    let array2 = Array.from(anchors);
+    array2[i].setAttribute('href', `#modal${i}`);
   }
 }
 $.getJSON(employeeAPI, displayData);
