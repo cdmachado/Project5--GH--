@@ -57,7 +57,6 @@ function createModal(i) {
 }
 
 // Handle AJAX request
-
 function modifyEmployeeInfo(variable, i, string) {
   variable[i].textContent = string;
   if (variable.length > 12) {
@@ -110,21 +109,23 @@ function lowerThan12(id, num) {
   }
 }
 
+
 function constructModals(id) {
-  let item1 = new NewModal('#modal', 'inline', (lowerThan12(id, 0)));
-  let item2 = new NewModal('#modal', 'inline', (lowerThan12(id, 1)));
-  let item3 = new NewModal('#modal', 'inline', (lowerThan12(id, 2)));
-  let item4 = new NewModal('#modal', 'inline', (lowerThan12(id, 3)));
-  let item5 = new NewModal('#modal', 'inline', (lowerThan12(id, 4)));
-  let item6 = new NewModal('#modal', 'inline', (lowerThan12(id, 5)));
-  let item7 = new NewModal('#modal', 'inline', (lowerThan12(id, 6)));
-  let item8 = new NewModal('#modal', 'inline', (lowerThan12(id, 7)));
-  let item9 = new NewModal('#modal', 'inline', (lowerThan12(id, 8)));
-  let item10 = new NewModal('#modal', 'inline', (lowerThan12(id, 9)));
-  let item11 = new NewModal('#modal', 'inline', (lowerThan12(id, 10)));
-  let item12 = new NewModal('#modal', 'inline', (lowerThan12(id, 11)));
+  let modalShow = [];
+  let arrayOfItems = [];
+  for (let i = 0; i < arrayLi.length; i++) {
+    let li = arrayLi[i];
+    if (li.style.display !== 'none') {
+      modalShow.push(li);
+    }
+  }
+  for (let i = 0; i < modalShow.length; i++) {
+    let item;
+    item = new NewModal('#modal', 'inline', (lowerThan12(id, i)));
+    arrayOfItems.push(item);
+  }
   $.magnificPopup.open({
-    items: [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12],
+    items: arrayOfItems,
     gallery: {
       enabled: true
     }
@@ -144,6 +145,8 @@ ul.addEventListener('click', (e) => {
   let id = '';
     if (target.tagName === 'LI') {
       id = parseInt(target.id);
+    } else if (target.tagName === 'DIV' && target.className == 'modal2') {
+      id = parseInt(target.parentNode.id);
     } else if (target.tagName === 'DIV') {
       id = parseInt(target.parentNode.parentNode.id);
     } else if (target.tagName === 'IMG') {
@@ -151,6 +154,7 @@ ul.addEventListener('click', (e) => {
     } else {
       id = parseInt(target.parentNode.parentNode.parentNode.id);
     }
+    debugger;
     target.tagName === 'UL' ? e.preventDefault() : constructModals(id);
 });
 
