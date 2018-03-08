@@ -9,7 +9,7 @@ ul {
 }
 
 li {
-  width: 28%;
+  width: 32%;
   margin-bottom: 15px;
 }
 
@@ -41,10 +41,6 @@ header {
   font-weight: bold;
 }
 
-.info {
-  font-family: sans-serif;
-}
-
 body {
   background-color: #fefff2;
 }
@@ -56,4 +52,90 @@ body {
   width: auto;
   max-width: 500px;
   margin: 20px auto;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 250px;
+  border-radius: .5em;
+}
+
+img {
+  border:0;
+}
+
+a {
+  text-decoration:none;
+  border:0;
+  outline:none;
+}
+
+#top {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal2 {
+  display: flex;
+}
+
+.info_modal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modal .info_modal img,
+.modal .info_modal .name,
+.modal .info_modal .email,
+.modal .info_modal .city {
+  margin: 6px;
+}
+
+.modal .info_modal .phone,
+.modal .info_modal .address,
+.modal .info_modal .birthday {
+  margin: 6px;
+}
+
+.modal .info_modal .phone {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top-style: inset;
+}
+
+.modal2 img {
+  padding: 10px;
+}
+
+p {
+  font-family: georgia;
+}
+
+.button {
+    background-color: #008CBA;
+    border: solid;
+    border-radius: 8px;
+    color: white;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    outline: none;
+}
+
+.button:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+input {
+  border-radius: 4px;
 }

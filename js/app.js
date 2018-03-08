@@ -6,35 +6,67 @@ const phoneList = document.getElementsByClassName('phone');
 const addressList = document.getElementsByClassName('address');
 const birthdayList = document.getElementsByClassName('birthday');
 const picList = document.getElementsByTagName('img');
+const body = document.getElementsByTagName('body')[0];
+const classesBox = ['name', 'email', 'city'];
+const classesModal = ['phone', 'address', 'birthday'];
 
+
+// Creation of the employee LI and Modal window
+function createElement(elm, clase, parent) {
+  let element = document.createElement(elm);
+  if (clase !== null && elm !== 'img') {
+    element.className = clase;
+  } else if (elm === 'img') {
+    parent.className = clase;
+  }
+  if (parent !== null) {
+    parent.appendChild(element);
+  }
+  return element;
+}
 
 function createEmployee(i) {
-  let li = document.createElement('li');
-  li.className = 'container container2 item test';
+  let li = createElement('li', 'container container2 item', ul);
   li.id = i;
-  // li.setAttribute('onClick', 'openModal()');
-  ul.appendChild(li);
+  let mainDiv = createElement('div', 'modal2', li);
+  let picDiv = createElement('div', null, mainDiv);
+  let anchor = createElement('a', null, picDiv);
+  createElement('img', 'open-popup-link', anchor);
+  anchor.setAttribute('href', `#modal${i}`);
+  let infoDiv = createElement('div', null, mainDiv);
+  placeData(classesBox, infoDiv);
+}
 
-  let picDiv = document.createElement('div');
-  li.appendChild(picDiv);
-
-  let anchor = document.createElement('a');
-  picDiv.appendChild(anchor);
-
-  let img = document.createElement('img');
-  anchor.setAttribute('href', `#test-popup${i}`);
-  anchor.className = 'open-popup-link';
-  anchor.appendChild(img);
-
-  let infoDiv = document.createElement('div');
-  li.appendChild(infoDiv);
-
-  const classes = ['name', 'email', 'city', 'phone', 'address', 'birthday'];
+function placeData(classes, div) {
   classes.forEach((clase) => {
     let employeeInfo = document.createElement('p');
     employeeInfo.className = clase;
-    infoDiv.appendChild(employeeInfo);
+    div.appendChild(employeeInfo);
   });
+}
+
+function createModal(i) {
+  let div = createElement('div', 'white-popup mfp-hide modal', null);
+  div.id = `modal${i}`;
+  body.insertBefore(div, ul);
+  let upperModal = createElement('div', 'info_modal', div);
+  let img = document.createElement('img');
+  upperModal.appendChild(img);
+  placeData(classesBox, upperModal);
+  placeData(classesModal, upperModal);
+}
+
+// Handle AJAX request
+
+function modifyEmployeeInfo(variable, i, string) {
+  variable[i].textContent = string;
+  if (variable.length > 12) {
+    variable[i + 12].textContent = string;
+  }
+}
+
+function capitalizeFirst(name) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function orderDOB(dob) {
@@ -44,25 +76,7 @@ function orderDOB(dob) {
   return `${month}/${day}/${year}`;
 }
 
-for (let i = 0; i < 12; i++) {
-  createEmployee(i);
-}
-
-function modifyEmployeeInfo(variable, i, string) {
-  variable[i].textContent = string
-}
-
-function capitalizeFirst(name) {
-  return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-function hideOrShow(element, dpy) {
-  let array = Array.from(element);
-  array.forEach(elm => elm.style.display = dpy);
-}
-
-
-const employeeAPI = 'https://randomuser.me/api/?results=12&inc=name,email,location,phone,dob,picture';
+const employeeAPI = 'https://randomuser.me/api/?results=12&inc=name,email,location,phone,dob,picture&nat=gb';
 function displayData(data) {
   for (let i = 0; i < 12; i++) {
     let array = data.results;
@@ -71,159 +85,121 @@ function displayData(data) {
     modifyEmployeeInfo(emailList, i, employee.email);
     modifyEmployeeInfo(cityList, i, capitalizeFirst(employee.location.city));
     modifyEmployeeInfo(phoneList, i, employee.phone);
-    modifyEmployeeInfo(addressList, i, employee.location.street);
+    modifyEmployeeInfo(addressList, i, `${employee.location.street}, ${employee.location.postcode}`);
     modifyEmployeeInfo(birthdayList, i, `Birthday: ${orderDOB(employee.dob)}`);
     picList[i].src = employee.picture.large;
-    picList[i].alt = 'profile';
-
-
+    picList[i + 12].src = employee.picture.large;
   }
 }
 $.getJSON(employeeAPI, displayData);
 
 
-hideOrShow(phoneList, 'none');
-hideOrShow(addressList, 'none');
-hideOrShow(birthdayList, 'none');
-
-// $('li').magnificPopup({
-//   type: 'inline',
-//   gallery: {
-//     enabled: true
-//   }
-// });
-
-// let liList = document.getElementsByTagName('li');
-// let arrayLI = Array.from(liList);
-// for (let i = 0; i < arrayLI.length; i++) {
-//   arrayLI[i].addEventListener('click', (e) => {
-//     let target = e.target;
-//     let idTarget = target.id;
-//     target.magnificPopup({
-//       items: {
-//         src: `#test-popup${idTarget}`,
-//         type: 'inline'
-//       },
-//       gallery: {
-//         enabled: true
-//       }
-//     });
-//   });
-// }
-
+//Lightbox plugin interface
 function NewModal(source, tipo, id) {
   this.src = source + id;
   this.type = 'inline';
 }
 
 function lowerThan12(id, num) {
-  if (id + num > 11) {
-    return (id + num) - 11;
+  if (id + num > 12) {
+    return (id + num) - 12;
+  } else if (id + num === 12) {
+    return 0;
   } else {
     return id + num;
   }
 }
 
+function constructModals(id) {
+  let item1 = new NewModal('#modal', 'inline', (lowerThan12(id, 0)));
+  let item2 = new NewModal('#modal', 'inline', (lowerThan12(id, 1)));
+  let item3 = new NewModal('#modal', 'inline', (lowerThan12(id, 2)));
+  let item4 = new NewModal('#modal', 'inline', (lowerThan12(id, 3)));
+  let item5 = new NewModal('#modal', 'inline', (lowerThan12(id, 4)));
+  let item6 = new NewModal('#modal', 'inline', (lowerThan12(id, 5)));
+  let item7 = new NewModal('#modal', 'inline', (lowerThan12(id, 6)));
+  let item8 = new NewModal('#modal', 'inline', (lowerThan12(id, 7)));
+  let item9 = new NewModal('#modal', 'inline', (lowerThan12(id, 8)));
+  let item10 = new NewModal('#modal', 'inline', (lowerThan12(id, 9)));
+  let item11 = new NewModal('#modal', 'inline', (lowerThan12(id, 10)));
+  let item12 = new NewModal('#modal', 'inline', (lowerThan12(id, 11)));
+  $.magnificPopup.open({
+    items: [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12],
+    gallery: {
+      enabled: true
+    }
+  });
+}
+
+// Load HTML
+for (let i = 0; i < 12; i++) {
+  createEmployee(i);
+  createModal(i);
+}
+
+// Event Listeners
 ul.addEventListener('click', (e) => {
   debugger;
   let target = e.target;
+  let id = '';
     if (target.tagName === 'LI') {
-      let id = parseInt(target.id);
-      let item1 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 0)));
-      let item2 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 1)));
-      let item3 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 2)));
-      let item4 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 3)));
-      let item5 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 4)));
-      let item6 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 5)));
-      let item7 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 6)));
-      let item8 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 7)));
-      let item9 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 8)));
-      let item10 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 9)));
-      let item11 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 10)));
-      let item12 = new NewModal('#test-popup', 'inline', (lowerThan12(id, 11)));
-    $.magnificPopup.open({
-      items: [item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12],
-      gallery: {
-        enabled: true
-      }
-    });
+      id = parseInt(target.id);
+    } else if (target.tagName === 'DIV') {
+      id = parseInt(target.parentNode.parentNode.id);
+    } else if (target.tagName === 'IMG') {
+      id = parseInt(target.parentNode.parentNode.parentNode.parentNode.id);
+    } else {
+      id = parseInt(target.parentNode.parentNode.parentNode.id);
+    }
+    target.tagName === 'UL' ? e.preventDefault() : constructModals(id);
+});
+
+ul.addEventListener('mouseover', (e) => {
+  let target = e.target;
+  target.style.cursor = 'pointer';
+  if (target.tagName == 'UL') {
+    target.style.cursor = 'default';
   }
 });
 
-// function openModal() {
-//   $.magnificPopup.open({
-//     items: [
-//       let item1 = new NewModal();
-//     ]
-//   });
-// }
 
-// function openModal() {
-//   $.magnificPopup.open({
-//     items: [
-//       {
-//         src: '#test-popup0',
-//         type: 'inline'
-//       },
-//       {
-//         src: '#test-popup1',
-//         type: 'inline'
-//       },
-//       {
-//         src: '#test-popup2',
-//         type: 'inline'
-//       },
-//       {
-//         src: '#test-popup3',
-//         type: 'inline'
-//       }
-//     ],
-//     gallery: {
-//       enabled: true
-//     }
-//   });
-// }
+// Search buttons interface
+const searchInput = document.getElementById('search');
+const searchButton = document.getElementsByTagName('button')[0];
+const listButton = document.getElementsByTagName('button')[1];
+const liList = document.getElementsByTagName('li');
+const arrayLi = Array.from(liList);
 
+function showOrHide(array, display) {
+  array.forEach(elm => elm.style.display = display);
+}
 
-// $('.test').magnificPopup({
-//   type:'inline',
-//   callbacks: {
-//     elementParse: function(item) {
-//       let target = item.el;
-//       item.src = `#test-popup${$(this).attr('id')}`;
-//       // Function will fire for each target element
-//       // "item.el" is a target DOM element (if present)
-//       // "item.src" is a source that you may modify
-//
-//       console.log(item); // Do whatever you want with "item" object
-//     }
-//   },
-//   gallery: {
-//     enabled: true
-//   }
-// });
+searchButton.addEventListener('click', () => {
+  let searchValue = searchInput.value.toUpperCase();
+  let searchNames = ul.getElementsByClassName('name');
+  let arrayOfEmployees = [];
+  if (searchValue !== '') {
+    for (let i = 0; i < searchNames.length; i++) {
+      let name = searchNames[i];
+      if (name.textContent.toUpperCase().includes(searchValue)) {
+        let li = name.parentNode.parentNode.parentNode;
+        arrayOfEmployees.push(li);
+      }
+    }
+    showOrHide(arrayLi, 'none');
+    showOrHide(arrayOfEmployees, 'block');
+    searchInput.value = '';
+  } else {
+    alert('Please write a name');
+  }
+});
 
+searchInput.addEventListener('keyup', (e) => {
+  if (e.keyCode === 13) {
+    searchButton.click();
+  }
+});
 
-// ul.addEventListener('click', (e) => {
-//   let target = e.target;
-//   if (target.tagName === 'LI') {
-//     let id = target.id;
-//     let a = target.firstElementChild.firstElementChild;
-//     a.setAttribute('href', `#test-popup0`);
-//
-//   }
-// })
-
-// $('ul').on('click', () => {
-//   let target = $(this);
-//   if (target.tagName === 'LI') {
-//     let id = target.id;
-//     let a = target.firstElementChild.firstElementChild;
-//     a.attr('href', `#test-popup0`);
-//   }
-// }).magnificPopup({
-//   type: 'inline',
-//   gallery: {
-//     enabled: true
-//   }
-// });;
+listButton.addEventListener('click', () => {
+  showOrHide(arrayLi, 'block');
+});
